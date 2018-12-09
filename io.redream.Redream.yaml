@@ -1,0 +1,37 @@
+app-id: io.redream.Redream
+runtime: org.freedesktop.Platform
+runtime-version: '18.08'
+sdk: org.freedesktop.Sdk
+command: redream
+tags:
+  - proprietary
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --share=network
+  - --device=dri
+  - --socket=pulseaudio
+  - --filesystem=xdg-documents
+modules:
+  - shared-modules/udev/udev-175.json
+
+  - name: redream
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra /app/bin/apply_extra
+      - install -Dm755 run.sh /app/bin/redream
+    sources:
+      - type: script
+        dest-filename: apply_extra
+        commands:
+          - tar -xf redream.tar.gz
+          - rm redream.tar.gz
+      - type: extra-data
+        filename: redream.tar.gz
+        url: https://redream.io/download/redream.x86_64-linux-v1.3.1.tar.gz
+        sha256: 52a5d6082dd52029d32345550985620e8cd0324c1c06acb05c182b3023fb4342
+        size: 2124354
+      - type: script
+        dest-filename: run.sh
+        commands:
+          - exec /app/extra/redream "$@"
