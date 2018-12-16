@@ -1,0 +1,206 @@
+app-id: net.unvanquished.Unvanquished
+runtime: org.freedesktop.Platform
+runtime-version: '18.08'
+sdk: org.freedesktop.Sdk
+command: unvanquished
+rename-desktop-file: unvanquished.desktop
+rename-icon: unvanquished
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=pulseaudio
+  - --device=dri
+  - --share=network
+modules:
+  - shared-modules/glu/glu-9.0.0.json
+  - shared-modules/glew/glew.json
+  - shared-modules/lua5.3/lua-5.3.2.json
+  - shared-modules/python2.7/python-2.7.15.json
+
+  - name: geoip
+    config-opts:
+      - --disable-static
+      - --with-pic
+    sources:
+      - type: archive
+        url: https://github.com/maxmind/geoip-api-c/releases/download/v1.6.12/GeoIP-1.6.12.tar.gz
+        sha256: 1dfb748003c5e4b7fd56ba8c4cd786633d5d6f409547584f6910398389636f80
+
+  - name: opus
+    config-opts:
+      - --disable-static
+      - --disable-doc
+      - --disable-extra-programs
+      - --enable-custom-modes
+    sources:
+      - type: archive
+        url: https://archive.mozilla.org/pub/opus/opus-1.3.tar.gz
+        sha256: 4f3d69aefdf2dbaf9825408e452a8a414ffc60494c70633560700398820dc550
+      - type: script
+        dest-filename: autogen.sh
+        commands:
+          - autoreconf -fiv
+    cleanup:
+      - /share/aclocal
+
+  - name: opusfile
+    sources:
+      - type: archive
+        url: https://github.com/xiph/opusfile/archive/v0.11.tar.gz
+        sha256: c2105cffc59545ffc0d2a65069e2f222a1712bbe579911ac0a3d3660edbbec57
+
+  - name: python-jinja2
+    buildsystem: simple
+    build-commands:
+      - pip2 install --prefix="${FLATPAK_DEST}" Jinja2-2.10-py2.py3-none-any.whl
+    modules:
+      - name: python-markupsafe
+        buildsystem: simple
+        build-commands:
+          - python2 setup.py install --prefix="${FLATPAK_DEST}" --optimize=1
+        sources:
+          - type: archive
+            url: https://files.pythonhosted.org/packages/ac/7e/1b4c2e05809a4414ebce0892fe1e32c14ace86ca7d50c70f00979ca9b3a3/MarkupSafe-1.1.0.tar.gz
+            sha256: 4e97332c9ce444b0c2c38dd22ddc61c743eb208d916e4265a2a3b575bdccb1d3
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/7f/ff/ae64bacdfc95f27a016a7bed8e8686763ba4d277a78ca76f32659220a731/Jinja2-2.10-py2.py3-none-any.whl
+        sha256: 74c935a1b8bb9a3947c50a54766a969d4846290e1e788ea44c1392163723c3bd
+
+  - name: python-yaml
+    ensure-writable:
+      - easy-install.pth
+    buildsystem: simple
+    build-commands:
+      - python2 setup.py install --prefix="${FLATPAK_DEST}" --optimize=1
+    modules:
+      - name: cython
+        ensure-writable:
+          - easy-install.pth
+        buildsystem: simple
+        build-commands:
+          - python2 setup.py install --prefix="${FLATPAK_DEST}" --optimize=1
+        sources:
+          - type: archive
+            url: https://github.com/cython/cython/archive/0.29.1.tar.gz
+            sha256: fab6796e5a5fb6e2f860c7d8180479dade01dfbebaf490a213c3e312a3a278d8
+        cleanup: ['*']
+
+      - name: libyaml
+        sources:
+          - type: archive
+            url: https://github.com/yaml/libyaml/archive/0.2.1.tar.gz
+            sha256: 1d2aeb87f7d317f1496e4c39410d913840714874a354970300f375eec9303dc4
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/9e/a3/1d13970c3f36777c583f136c136f804d70f500168edc1edea6daa7200769/PyYAML-3.13.tar.gz
+        sha256: 3ef3092145e9b70e3ddd2c7ad59bdd0252a94dfe3949721633e41344de00a6bf
+
+  # - name: ncurses
+  #   no-autogen: true
+  #   config-opts:
+  #     - --with-shared
+  #     - --with-normal
+  #     - --without-debug
+  #     - --without-ada
+  #     - --with-termlib
+  #     - --enable-widec
+  #     - --enable-pc-files
+  #     - --with-cxx-binding
+  #     - --with-cxx-shared
+  #   make-install-args:
+  #     - install.libs
+  #   # post-install:
+  #   #   ln -s ${FLATPAK_DEST}/lib/libncursesw.so.6.1 "/usr/lib/x86_64-linux-gnu/libtinfo.so.6.1"
+  #   #   ln -s libncursesw.so.6.1 "${FLATPAK_DEST}/lib/libtinfo.so.6"
+  #   #   ln -s libncursesw.so.6.1 "${FLATPAK_DEST}/lib/libtinfo.so"
+  #   sources:
+  #     - type: archive
+  #       url: http://ftp.gnu.org/gnu/ncurses/ncurses-6.1.tar.gz
+  #       sha256: aa057eeeb4a14d470101eff4597d5833dcef5965331be3528c08d99cebaa0d17
+
+  - name: unvanquished
+    builddir: true
+    no-make-install: true
+    config-opts:
+      - -DBUILD_SGAME=OFF
+      - -DBUILD_CGAME=OFF
+      - -DCMAKE_BUILD_TYPE=Release
+      - -Wno-dev
+    post-install:
+      - install -Dm644 -t "${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/" ../debian/unvanquished.png
+      - install -Dm755 -t "${FLATPAK_DEST}/share/unvanquished/pkg" ../*.dpk
+    buildsystem: cmake
+    sources:
+      - type: shell
+        commands:
+          - ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6.1 ${FLATPAK_DEST}/lib/libtinfo.so.6.1
+          - ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6.1 ${FLATPAK_DEST}/lib/libtinfo.so.6
+          - ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6.1 ${FLATPAK_DEST}/lib/libtinfo.so
+      - type: archive
+        url: https://github.com/DaemonEngine/breakpad/archive/unvanquished/0.51.1.tar.gz
+        sha256: 1c324e7124a75b7235d19892374f87a1fd96f35d18552802a47c09b09dfc88ee
+        dest: daemon/libs/breakpad
+      - type: archive
+        url: https://github.com/DaemonEngine/crunch/archive/unvanquished/0.51.1.tar.gz
+        sha256: 42a218a15ab63996ab48bc2d6014e5ce5b9e444bfaf6f346c119602ec541cfb6
+        dest: daemon/libs/crunch
+      - type: archive
+        url: https://github.com/DaemonEngine/recastnavigation/archive/unvanquished/0.51.1.tar.gz
+        sha256: 0f12e7799ffd7496b5e2ea60ff078faefd36072fab34b3616163f10e8cbdd55d
+        dest: daemon/libs/recastnavigation
+      - type: archive
+        url: https://dl.unvanquished.net/deps/linux64-4.tar.bz2
+        sha256: 272006a235fe86a70e971f8573874137e382b7a636163e0c75d015b1340791bd
+        dest: daemon/external_deps/linux64-4
+        only-arches: ['x86_64']
+      - type: archive
+        url: https://dl.unvanquished.net/deps/linux32-4.tar.bz2
+        sha256: abd40cdf18c1e02c4d817e9b96a63f1b71baaa7a681070a509ef6f9aa156aeaa
+        dest: daemon/external_deps/linux32-4
+        only-arches: ['i386']
+      - type: archive
+        url: https://github.com/DaemonEngine/Daemon/archive/v0.51.1.tar.gz
+        sha256: 73437e5fd1c8bfbebe215b61d7cb738bb6cc73bd4b4656da6344cf7e87ac2aac
+        dest: daemon
+      - type: archive
+        url: https://github.com/Unvanquished/libRocket/archive/unvanquished/0.51.1.tar.gz
+        sha256: 8c20562eab46676c7e260654c76975139bf7b72f9c44c31ef5905bd8d9fdb527
+        dest: libs/libRocket
+      - type: archive
+        url: https://github.com/Unvanquished/Unvanquished/archive/v0.51.1.tar.gz
+        sha256: a0fb815cec9c6e405d30b4a78b4c44ac4ba8412a204eb5d1d5c564d8bf123020
+
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-antares_1.dpk
+        sha256: 915f2813313a39f7c4e8cb7cb674d1fb55f0085895aae64cafe7c3adb5fbd2b1
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-chasm_1.2.dpk
+        sha256: b1cd7151f8d8fb9d79da531acf0c437d2b9fcc6618e911139f20bb325accb7f3
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-forlorn_0.15.dpk
+        sha256: 92a4ed678cf3d24dc1f41451606751957fec1a2d1390b27916b389bd2614ce47
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-parpax_2.5.1.dpk
+        sha256: efe7273c99805b8bdf2cf43e5c49d15b200cfd9def8ed735412afc1ce3571e8e
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-perseus_1.dpk
+        sha256: 3ebb57e27a7af811160c1ed4c0ee542981ccec8892568743edfd3b8f5834150c
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-plat23_1.13.1.dpk
+        sha256: 01fb1eea19bc229a926e5ec1580b277af1403027f543d37d12a3943d1d97e62f
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-spacetracks_1.1.dpk
+        sha256: 2fa72edfad3f89c5ea97a868d3c5d230ede763ed417e290ab48da7f83c41cfbc
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-station15_1.1.dpk
+        sha256: 354935bbdff7c78149ac503a0bf6000205d1abf48907791efa145db0be69c26e
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-thunder_1.3.2.dpk
+        sha256: 7bbcc2cb37f3a405a34004b5840374b150270c46c9580af60fc83197b6f80541
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-vega_1.4.dpk
+        sha256: fcd482cb5388930cd7a34e3953e823f2900a22365adcd33d4a7c55562ded46c0
+      - type: file
+        url: http://cdn.unvanquished.net/0.51/pkg/map-yocto_1.dpk
+        sha256: da86ae50d712bdff562a92a9cb7ef8a4ba6161513f9bc242b45c1b21706f910d
