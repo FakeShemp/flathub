@@ -1,0 +1,51 @@
+id: org.bitbucket.mystery_keeper.VapourSynthEditor.Plugin.waifu2x
+branch: 1-5.12
+runtime: org.bitbucket.mystery_keeper.VapourSynthEditor
+runtime-version: stable
+sdk: org.freedesktop.Sdk//18.08
+build-extension: true
+separate-locales: false
+appstream-compose: false
+build-options:
+  prefix: ${FLATPAK_DEST}
+# cleanup:
+#   - /lib/pkgconfig
+#   - /bin
+#   - /include
+modules:
+  - name: opencl-headers
+    buildsystem: simple
+    build-commands:
+      - install -d "${FLATPAK_DEST}/include/CL"
+      - install -Dm644 CL/* "${FLATPAK_DEST}/include/CL"
+    sources:
+      - type: git
+        url: https://github.com/KhronosGroup/OpenCL-Headers.git
+        commit: 0d5f18c6e7196863bc1557a693f1509adfcee056        
+
+  - name: w2xc
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DENABLE_OPENCV='OFF'
+      - -DENABLE_CUDA='OFF'
+      - -DCMAKE_BUILD_TYPE='Release'
+      - -DINSTALL_MODELS='ON'
+      - -DOpenCL_INCLUDE_DIR='${FLATPAK_DEST}/include/CL'
+    sources:
+      - type: archive
+        url: https://github.com/DeadSix27/waifu2x-converter-cpp/archive/v5.3.1.tar.gz
+        sha256: 69f01e3229184f1858f878246cab9e01a5e01d89039d7d34442667ab3c90e5ab
+
+  - name: waifu2x
+    buildsystem: meson
+    # config-opts:
+    #   - --libdir ${FLATPAK_DEST}/lib
+    post-install:
+      - install -Dm644 --target-directory=${FLATPAK_DEST}/share/metainfo org.bitbucket.mystery_keeper.VapourSynthEditor.Plugin.waifu2x.metainfo.xml
+      - appstream-compose --basename=org.bitbucket.mystery_keeper.VapourSynthEditor.Plugin.waifu2x --prefix=${FLATPAK_DEST} --origin=flatpak org.bitbucket.mystery_keeper.VapourSynthEditor.Plugin.waifu2x
+    sources: 
+      - type: archive
+        url: https://github.com/HomeOfVapourSynthEvolution/VapourSynth-Waifu2x-w2xc/archive/r8.tar.gz
+        sha256: 9dad7048962ce521a7722d73b4bb97a50df879958edd537129a83db4e264976f
+      - type: file
+        path: org.bitbucket.mystery_keeper.VapourSynthEditor.Plugin.waifu2x.metainfo.xml

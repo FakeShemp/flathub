@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="addon">
+    <id>org.bitbucket.mystery_keeper.VapourSynthEditor.Plugin.waifu2x</id>
+    <extends>org.bitbucket.mystery_keeper.VapourSynthEditor.desktop</extends>
+    <name>waifu2x Plugin</name>
+    <summary>waifu2x upscaling filter based on the w2xc library</summary>
+    <url type="homepage">https://github.com/HomeOfVapourSynthEvolution/VapourSynth-Waifu2x-w2xc</url>
+    <project_license>MIT</project_license>
+    <metadata_license>CC0-1.0</metadata_license>
+    <update_contact>sakcheen+flathub_AT_gmail.com</update_contact>
+</component>
