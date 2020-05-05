@@ -1,6 +1,6 @@
 app-id: io.redream.Redream
 runtime: org.freedesktop.Platform
-runtime-version: '18.08'
+runtime-version: '19.08'
 sdk: org.freedesktop.Sdk
 command: redream
 tags:
@@ -13,8 +13,6 @@ finish-args:
   - --socket=pulseaudio
   - --filesystem=xdg-documents
 modules:
-  - shared-modules/udev/udev-175.json
-
   - name: redream
     buildsystem: simple
     build-commands:
@@ -28,9 +26,9 @@ modules:
           - rm redream.tar.gz
       - type: extra-data
         filename: redream.tar.gz
-        url: https://redream.io/download/redream.x86_64-linux-v1.3.1.tar.gz
-        sha256: 52a5d6082dd52029d32345550985620e8cd0324c1c06acb05c182b3023fb4342
-        size: 2124354
+        url: https://redream.io/download/redream.x86_64-linux-v1.5.0.tar.gz
+        sha256: 6f1eec9e4bab7411dbee08192a2ae6c133a2ae08af98b25afab4d61060fc0466
+        size: 2060263
       - type: script
         dest-filename: run.sh
         commands:
