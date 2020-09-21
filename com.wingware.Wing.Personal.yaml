@@ -1,0 +1,56 @@
+app-id: com.wingware.Wing.Personal
+runtime: org.freedesktop.Sdk
+runtime-version: '20.08'
+sdk: org.freedesktop.Sdk
+command: wing-personal
+modules:
+  - name: wing-personal
+    buildsystem: simple
+    build-commands:
+      - install -D apply_extra /app/bin/apply_extra
+      - install -D wing-personal /app/bin/wing-personal
+      - install -Dm644 -t "${FLATPAK_DEST}/share/metainfo" "com.wingware.Wing.Personal.metainfo.xml"
+      - install -Dm644 -t "${FLATPAK_DEST}/share/applications" "com.wingware.Wing.Personal.desktop"
+      - install -p -Dm644 "wing16.png" "${FLATPAK_DEST}/share/icons/hicolor/16x16/apps/${FLATPAK_ID}.png"
+      - install -p -Dm644 "wing32.png" "${FLATPAK_DEST}/share/icons/hicolor/32x32/apps/${FLATPAK_ID}.png"
+      - install -p -Dm644 "wing48.png" "${FLATPAK_DEST}/share/icons/hicolor/48x48/apps/${FLATPAK_ID}.png"
+      - install -p -Dm644 "wing64.png" "${FLATPAK_DEST}/share/icons/hicolor/64x64/apps/${FLATPAK_ID}.png"
+      - install -p -Dm644 "wing128.png" "${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png"
+    sources:
+      - type: extra-data
+        url: https://wingware.com/pub/wing-personal/7.2.5.0/wing-personal-7.2.5.0-linux-x64.tar.bz2
+        sha256: 1cdcc8ab0a88f323e11a7f45504e2d074558f24a657aa0da69d6205a32becbd4
+        Sha1: b626fe009867d2bf6520f787318f73bbef009e34
+        size: 72233246
+        filename: wing-personal.tar.bz2
+        x-checker-data: 
+          type: html
+          url: https://wingware.com/downloads/wing-personal
+          url-pattern: (https://wingware.com/pub/wing-personal/[0-9.]+/wing-personal-[0-9.]+-linux-x64.tar.bz2)
+          version-pattern: https://wingware.com/pub/wing-personal/([0-9.]+)/wing-personal-([0-9.]+)-linux-x64.tar.bz2
+      - type: file
+        path: com.wingware.Wing.Personal.metainfo.xml
+      - type: file
+        path: com.wingware.Wing.Personal.desktop
+      - type: file
+        path: icons/wing16.png
+      - type: file
+        path: icons/wing32.png
+      - type: file
+        path: icons/wing48.png
+      - type: file
+        path: icons/wing64.png
+      - type: file
+        path: icons/wing128.png
+      - type: script
+        dest-filename: wing-personal
+        commands:
+          - exec /app/extra/wing-personal "$@"
+      - type: script
+        dest-filename: apply_extra
+        commands:
+          - tar -jxvf wing-personal.tar.bz2 --strip 1
+          - rm -f wing-personal.tar.bz2
+          - rm -f wing-install.py
+          - tar -xvf binary-package-*.tar --strip 1
+          - rm -f binary-package-*.tar

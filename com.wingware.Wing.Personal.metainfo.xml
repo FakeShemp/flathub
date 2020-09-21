@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.wingware.Wing.Personal</id>
+    <metadata_license>CC0</metadata_license>
+    <name>Wing Personal</name>
+    <summary>A powerful Python IDE</summary>
+    <description>
+        <p>A free Python IDE for students and hobbyists</p>
+        <ul>
+            <li>Simplified Debugger</li>
+            <li>Limited Editor</li>
+            <li>Some Code Inspection and Navigation</li>
+            <li>Basic Project Management</li>
+        </ul>
+        <p>NOTE: This package is not verified by, affiliated with, or supported by Wingware</p>
+    </description>
+    <url type="homepage">https://wingware.com/</url>
+    <launchable type="desktop-id">com.wingware.Wing.Personal.desktop</launchable>
+    <releases>
+        <release version="7.2.5" date="2020-09-09"/>
+    </releases>
+    <project_license>LicenseRef-proprietary</project_license>
+    <developer_name>Wingware</developer_name>
+    <screenshots>
+        <screenshot type="default">
+            <image type="source">https://wingware.com/images/screenshots/wing7-screenshot-dark-small.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image type="source">https://wingware.com/images/screenshots/wing7-screenshot-linen-small.jpg</image>
+        </screenshot>
+    </screenshots>
+    <content_rating type="oars-1.1"/>
+</component>

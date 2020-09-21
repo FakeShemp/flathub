@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Wing Personal
+Comment=Wing Personal: A powerful Python IDE
+GenericName=Python IDE
+Exec=wing-personal
+Terminal=false
+Type=Application
+Icon=com.wingware.Wing.Personal
+Categories=Development;
+StartupNotify=true
+MimeType=application/x-wing-ide-project;
+StartupWMClass=WingPersonal
